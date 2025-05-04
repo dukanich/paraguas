@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flashcards App</title>
+  
+  <!-- Подключаем React и ReactDOM -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  
+  <!-- Подключаем Babel для JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <!-- Подключаем шрифт Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Базовые стили */
+    :root {
+      --background-light: linear-gradient(to bottom right, #f9f7ff, #e6f0ff);
+      --background-dark: linear-gradient(to bottom right, #111827, #000000);
+      --card-bg-light: #ffffff;
+      --card-bg-dark: #1f2937;
+      --card-question-bg-light: linear-gradient(to bottom right, #ede9fe, #fce7f3);
+      --card-question-bg-dark: linear-gradient(to bottom right, #1f2937, #111827);
+      --card-answer-bg-light: #ffffff;
+      --card-answer-bg-dark: #1f2937;
+      --text-light: #1f2937;
+      --text-dark: #e5e7eb;
+      --text-muted-light: #6b7280;
+      --text-muted-dark: #9ca3af;
+      --border-light: #e5e7eb;
+      --border-dark: #374151;
+      --shadow-light: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-dark: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.18);
+      --button-bg-light: #ffffff;
+      --button-bg-dark: #374151;
+      --button-hover-light: #f9fafb;
+      --button-hover-dark: #4b5563;
+      --button-border-light: #e5e7eb;
+      --button-border-dark: #4b5563;
+      --select-bg-light: #ffffff;
+      --select-bg-dark: #374151;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--background-light);
+      color: var(--text-light);
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body.dark {
+      background: var(--background-dark);
+      color: var(--text-dark);
+    }
+
+    .container {
+      max-width: 100%;
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .header {
+      width: 100%;
+      max-width: 28rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .select-container {
+      position: relative;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .select {
+      width: 100%;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border-light);
+      background-color: var(--select-bg-light);
+      color: var(--text-light);
+      font-size: 0.875rem;
+      cursor: pointer;
+      appearance: none;
+      padding-right: 2rem;
+    }
+
+    body.dark .select {
+      border-color: var(--border-dark);
+      background-color: var(--select-bg-dark);
+      color: var(--text-dark);
+    }
+
+    .select-arrow {
+      position: absolute;
+      right: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    .theme-toggle {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 9999px;
+      border: 1px solid var(--border-light);
+      background-color: var(--button-bg-light);
+      color: var(--text-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+
+    body.dark .theme-toggle {
+      border-color: var(--border-dark);
+      background-color: var(--button-bg-dark);
+      color: var(--text-dark);
+    }
+
+    .theme-toggle:hover {
+      background-color: var(--button-hover-light);
+    }
+
+    body.dark .theme-toggle:hover {
+      background-color: var(--button-hover-dark);
+    }
+
+    .theme-label {
+      margin-right: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--text-muted-light);
+    }
+
+    body.dark .theme-label {
+      color: var(--text-muted-dark);
+    }
+
+    .flashcard-container {
+      width: 100%;
+      max-width: 28rem;
+      height: 300px;
+      position: relative;
+      margin-bottom: 2rem;
+    }
+
+    .stack-card {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 0.75rem;
+      background-color: var(--card-bg-light);
+      box-shadow: var(--shadow-light);
+      opacity: 0.6;
+    }
+
+    body.dark .stack-card {
+      background-color: var(--card-bg-dark);
+      box-shadow: var(--shadow-dark);
+    }
+
+    .stack-card-1 {
+      transform: translateY(2px) translateX(1.5px) rotate(1.5deg);
+      opacity: 0.6;
+    }
+
+    .stack-card-2 {
+      transform: translateY(1.5px) translateX(1px) rotate(1deg);
+      opacity: 0.7;
+    }
+
+    .stack-card-3 {
+      transform: translateY(1px) translateX(0.5px) rotate(0.5deg);
+      opacity: 0.8;
+    }
+
+    .flashcard {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.6s;
+    }
+
+    .flashcard.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+
+    .flashcard-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .flashcard-question {
+      background: var(--card-question-bg-light);
+      border: 1px solid var(--border-light);
+      color: var(--text-light);
+    }
+
+    body.dark .flashcard-question {
+      background: var(--card-question-bg-dark);
+      border-color: var(--border-dark);
+      color: var(--text-dark);
+    }
+
+    .flashcard-answer {
+      background: var(--card-answer-bg-light);
+      border: 1px solid var(--border-light);
+      color: var(--text-light);
+      transform: rotateY(180deg);
+    }
+
+    body.dark .flashcard-answer {
+      background: var(--card-answer-bg-dark);
+      border-color: var(--border-dark);
+      color: var(--text-dark);
+    }
+
+    .flashcard-text {
+      font-size: 1.5rem;
+      font-weight: 500;
+      text-align: center;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .navigation {
+      width: 100%;
+      max-width: 28rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-button {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 9999px;
+      border: 1px solid var(--border-light);
+      background-color: var(--button-bg-light);
+      color: var(--text-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.2s, border-color 0.2s, opacity 0.2s;
+    }
+
+    body.dark .nav-button {
+      border-color: var(--border-dark);
+      background-color: var(--button-bg-dark);
+      color: var(--text-dark);
+    }
+
+    .nav-button:hover:not(:disabled) {
+      background-color: var(--button-hover-light);
+    }
+
+    body.dark .nav-button:hover:not(:disabled) {
+      background-color: var(--button-hover-dark);
+    }
+
+    .nav-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .counter {
+      font-size: 0.875rem;
+      color: var(--text-muted-light);
+    }
+
+    body.dark .counter {
+      color: var(--text-muted-dark);
+    }
+
+    .category-label {
+      margin-top: 1rem;
+      font-size: 0.875rem;
+      color: var(--text-muted-light);
+    }
+
+    body.dark .category-label {
+      color: var(--text-muted-dark);
+    }
+
+    /* Анимации */
+    @keyframes slideOutLeft {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(-300px); opacity: 0; }
+    }
+
+    @keyframes slideOutRight {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(300px); opacity: 0; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .slide-out-left {
+      animation: slideOutLeft 0.3s forwards;
+    }
+
+    .slide-out-right {
+      animation: slideOutRight 0.3s forwards;
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s forwards;
+    }
+
+    /* Адаптивность */
+    @media (max-width: 640px) {
+      .header {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .select-container {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    // Данные карточек
+    const allFlashcards = [
+      { id: 1, question: "Привет, как дела?", answer: "Hello, how are you?", category: "Приветствия" },
+      { id: 2, question: "Что ты делаешь?", answer: "What are you doing?", category: "Общие фразы" },
+      { id: 3, question: "Где ты находишься?", answer: "Where are you?", category: "Вопросы" },
+      { id: 4, question: "Как тебя зовут?", answer: "What is your name?", category: "Приветствия" },
+      { id: 5, question: "Сколько тебе лет?", answer: "How old are you?", category: "Вопросы" },
+      { id: 6, question: "Доброе утро!", answer: "Good morning!", category: "Приветствия" },
+      { id: 7, question: "До свидания!", answer: "Goodbye!", category: "Приветствия" },
+      { id: 8, question: "Я не понимаю", answer: "I don't understand", category: "Общие фразы" },
+      { id: 9, question: "Сколько это стоит?", answer: "How much is it?", category: "Вопросы" },
+      { id: 10, question: "Мне нравится учить языки", answer: "I like learning languages", category: "Общие фразы" },
+    ];
+
+    // Получаем уникальные категории
+    const categories = ["Все категории", ...Array.from(new Set(allFlashcards.map(card => card.category)))];
+
+    // Основной компонент приложения
+    function App() {
+      const [currentIndex, setCurrentIndex] = React.useState(0);
+      const [showAnswer, setShowAnswer] = React.useState(false);
+      const [direction, setDirection] = React.useState(0);
+      const [selectedCategory, setSelectedCategory] = React.useState("Все категории");
+      const [isDarkMode, setIsDarkMode] = React.useState(false);
+      const [isAnimating, setIsAnimating] = React.useState(false);
+
+      // Применяем темную тему к body
+      React.useEffect(() => {
+        if (isDarkMode) {
+          document.body.classList.add('dark');
+        } else {
+          document.body.classList.remove('dark');
+        }
+      }, [isDarkMode]);
+
+      // Фильтруем карточки по выбранной категории
+      const filteredCards = React.useMemo(() => {
+        if (selectedCategory === "Все категории") {
+          return allFlashcards;
+        }
+        return allFlashcards.filter(card => card.category === selectedCategory);
+      }, [selectedCategory]);
+
+      // Обработчик смены категории
+      const handleCategoryChange = (e) => {
+        const category = e.target.value;
+        setSelectedCategory(category);
+        setCurrentIndex(0);
+        setShowAnswer(false);
+      };
+
+      // Обработчики навигации
+      const handleNext = () => {
+        if (currentIndex < filteredCards.length - 1 && !isAnimating) {
+          setIsAnimating(true);
+          const cardElement = document.querySelector('.flashcard');
+          if (cardElement) {
+            cardElement.classList.add('slide-out-left');
+            
+            setTimeout(() => {
+              setDirection(-1);
+              setShowAnswer(false);
+              setCurrentIndex(currentIndex + 1);
+              
+              setTimeout(() => {
+                if (cardElement) {
+                  cardElement.classList.remove('slide-out-left');
+                  cardElement.classList.add('fade-in');
+                  
+                  setTimeout(() => {
+                    if (cardElement) {
+                      cardElement.classList.remove('fade-in');
+                    }
+                    setIsAnimating(false);
+                  }, 500);
+                }
+              }, 50);
+            }, 300);
+          }
+        }
+      };
+
+      const handlePrev = () => {
+        if (currentIndex > 0 && !isAnimating) {
+          setIsAnimating(true);
+          const cardElement = document.querySelector('.flashcard');
+          if (cardElement) {
+            cardElement.classList.add('slide-out-right');
+            
+            setTimeout(() => {
+              setDirection(1);
+              setShowAnswer(false);
+              setCurrentIndex(currentIndex - 1);
+              
+              setTimeout(() => {
+                if (cardElement) {
+                  cardElement.classList.remove('slide-out-right');
+                  cardElement.classList.add('fade-in');
+                  
+                  setTimeout(() => {
+                    if (cardElement) {
+                      cardElement.classList.remove('fade-in');
+                    }
+                    setIsAnimating(false);
+                  }, 500);
+                }
+              }, 50);
+            }, 300);
+          }
+        }
+      };
+
+      // Обработчик свайпа
+      const handleSwipe = (event) => {
+        const touchEndX = event.changedTouches[0].clientX;
+        const touchStartX = touchStartRef.current;
+        const diff = touchStartX - touchEndX;
+        
+        if (Math.abs(diff) > 50) { // Минимальное расстояние для свайпа
+          if (diff > 0 && currentIndex < filteredCards.length - 1) {
+            handleNext();
+          } else if (diff < 0 && currentIndex > 0) {
+            handlePrev();
+          }
+        }
+      };
+      
+      const touchStartRef = React.useRef(0);
+      
+      const handleTouchStart = (event) => {
+        touchStartRef.current = event.touches[0].clientX;
+      };
+
+      // Переключение темы
+      const toggleTheme = () => {
+        setIsDarkMode(!isDarkMode);
+      };
+
+      // Переключение ответа
+      const toggleAnswer = () => {
+        setShowAnswer(!showAnswer);
+      };
+
+      return (
+        <div className="container">
+          <div className="header">
+            <div className="select-container">
+              <select className="select" value={selectedCategory} onChange={handleCategoryChange}>
+                {categories.map(category => (
+                  <option key={category} value={category}>{category}</option>
+                ))}
+              </select>
+              <div className="select-arrow">▼</div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <span className="theme-label">{isDarkMode ? 'Темная' : 'Светлая'}</span>
+              <button className="theme-toggle" onClick={toggleTheme}>
+                {isDarkMode ? (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                  </svg>
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                  </svg>
+                )}
+              </button>
+            </div>
+          </div>
+
+          <div className="flashcard-container" 
+               onTouchStart={handleTouchStart} 
+               onTouchEnd={handleSwipe}>
+            {/* Фоновые карточки для эффекта стопки */}
+            <div className="stack-card stack-card-1"></div>
+            <div className="stack-card stack-card-2"></div>
+            <div className="stack-card stack-card-3"></div>
+
+            {filteredCards.length > 0 ? (
+              <div className={`flashcard ${showAnswer ? 'flipped' : ''}`} onClick={toggleAnswer}>
+                <div className="flashcard-inner">
+                  <div className="flashcard-face flashcard-question">
+                    <div className="flashcard-text">{filteredCards[currentIndex].question}</div>
+                  </div>
+                  <div className="flashcard-face flashcard-answer">
+                    <div className="flashcard-text">{filteredCards[currentIndex].answer}</div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="flashcard">
+                <div className="flashcard-inner">
+                  <div className="flashcard-face flashcard-question">
+                    <div className="flashcard-text">Нет карточек в выбранной категории</div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="navigation">
+            <button 
+              className="nav-button" 
+              onClick={handlePrev} 
+              disabled={currentIndex === 0 || filteredCards.length === 0 || isAnimating}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m15 18-6-6 6-6"></path>
+              </svg>
+            </button>
+
+            <div className="counter">
+              {filteredCards.length > 0 ? `${currentIndex + 1} / ${filteredCards.length}` : "0 / 0"}
+            </div>
+
+            <button 
+              className="nav-button" 
+              onClick={handleNext} 
+              disabled={currentIndex === filteredCards.length - 1 || filteredCards.length === 0 || isAnimating}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m9 18 6-6-6-6"></path>
+              </svg>
+            </button>
+          </div>
+
+          {filteredCards.length > 0 && (
+            <div className="category-label">
+              Категория: {filteredCards[currentIndex].category}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // Рендерим приложение
+    const rootElement = document.getElementById('root');
+    const root = ReactDOM.createRoot(rootElement);
+    root.render(<App />);
+  </script>
+</body>
+</html>

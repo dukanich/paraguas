@@ -1,0 +1,19 @@
+{
+  "name": "paraguas",
+  "version": "1.0.0",
+  "description": "Spanish Language Flashcard App",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "generate-icons": "node scripts/generate-icons.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "googleapis": "^118.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22",
+    "sharp": "^0.32.1"
+  }
+} 

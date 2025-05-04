@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#4A90E2">
+    <meta name="description" content="PARAGUAS - Spanish Language Flashcard App">
+    
+    <title>PARAGUAS</title>
+    
+    <!-- PWA manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- iOS support -->
+    <link rel="apple-touch-icon" href="assets/icons/logo.svg">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PARAGUAS">
+    
+    <!-- Android support -->
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Google API Client -->
+    <script src="https://apis.google.com/js/api.js" async defer></script>
+    
+    <!-- ResponsiveVoice.js -->
+    <script src="https://code.responsivevoice.org/responsivevoice.js?key=s63BTqXk"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="assets/icons/logo-light.svg" alt="PARAGUAS" class="logo-image light-theme">
+                <img src="assets/icons/logo-dark.svg" alt="PARAGUAS" class="logo-image dark-theme">
+            </div>
+            <div class="header-center">
+                <select id="category-select">
+                    <option value="">Todas las categorías</option>
+                </select>
+            </div>
+            <div class="header-right">
+                <div class="menu-container">
+                    <button id="menu-button" class="menu-button" aria-label="Меню">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="1"></circle>
+                            <circle cx="12" cy="5" r="1"></circle>
+                            <circle cx="12" cy="19" r="1"></circle>
+                        </svg>
+                    </button>
+                    <div id="menu-dropdown" class="menu-dropdown hidden">
+                        <a href="https://docs.google.com/spreadsheets/d/1jvk535SZxXYzfgUB-wRhk-V25_dAbNDDkL3It85bGNg" target="_blank" class="menu-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="12" y1="18" x2="12" y2="12"></line>
+                                <line x1="9" y1="15" x2="15" y2="15"></line>
+                            </svg>
+                            <span>Google Spreadsheet</span>
+                        </a>
+                        <button id="theme-toggle" class="menu-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                            </svg>
+                            <span>Тёмная тема</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Flashcard Container -->
+        <div class="flashcard-container">
+            <!-- Stack Cards Effect -->
+            <div class="stack-card stack-card-1"></div>
+            <div class="stack-card stack-card-2"></div>
+            <div class="stack-card stack-card-3"></div>
+
+            <!-- Main Flashcard -->
+            <div id="card" class="flashcard">
+                <div class="flashcard-inner">
+                    <div class="flashcard-face flashcard-question">
+                        <button id="speak-button" class="speak-button" aria-label="Произнести слово">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                            </svg>
+                        </button>
+                        <div id="question-container" class="flashcard-text"></div>
+                    </div>
+                    <div class="flashcard-face flashcard-answer">
+                        <div id="answer-container" class="flashcard-text"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <button id="prev-button" class="nav-button" aria-label="Anterior">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="m15 18-6-6 6-6"></path>
+                </svg>
+            </button>
+            <div class="counter">
+                <span id="current-index">0</span> / <span id="total-words">0</span>
+            </div>
+            <button id="next-button" class="nav-button" aria-label="Siguiente">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="m9 18 6-6-6-6"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Category Label -->
+        <div id="category-label" class="category-label"></div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="loading" class="loading-indicator">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <div class="loading-text">Загрузка данных...</div>
+        </div>
+    </div>
+
+    <!-- Service Worker Registration -->
+    <script src="js/app.js" type="module"></script>
+</body>
+</html> 
