@@ -175,9 +175,10 @@ async function initGoogleSheets() {
 
 // Load Words
 async function loadWords() {
+    let offlineWords = [];
     try {
         // Сначала пробуем загрузить из IndexedDB
-        const offlineWords = await loadWordsFromIndexedDB();
+        offlineWords = await loadWordsFromIndexedDB();
         console.log('Loaded offline words:', offlineWords?.length || 0);
 
         // Проверяем доступность интернета
