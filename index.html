@@ -133,9 +133,7 @@
     <!-- Service Worker Registration -->
     <script>
       if ('serviceWorker' in navigator) {
-        // Для GitHub Pages: корректный путь с учетом base path
-        const swPath = window.location.pathname.replace(/\/$/, '') + '/sw.js';
-        navigator.serviceWorker.register(swPath)
+        navigator.serviceWorker.register('/paraguas/sw.js')
           .then(reg => console.log('ServiceWorker registered:', reg.scope))
           .catch(err => console.error('ServiceWorker registration failed:', err));
       }

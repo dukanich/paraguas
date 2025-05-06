@@ -316,4 +316,7 @@ export {
     getRandomWord,
     getDBInfo,
     loadWordsFromIndexedDB
-}; 
+};
+
+const swPath = window.location.pathname.replace(/\/$/, '') + '/sw.js';
+navigator.serviceWorker.register(swPath); 
