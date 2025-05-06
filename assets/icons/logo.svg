@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Фон -->
+    <rect width="512" height="512" rx="128" fill="#4A90E2"/>
+    
+    <!-- Купол зонтика -->
+    <path d="M256 96C176 96 112 160 112 240C112 320 176 384 256 384C336 384 400 320 400 240C400 160 336 96 256 96Z" fill="white"/>
+    
+    <!-- Ручка зонтика -->
+    <path d="M256 384L256 448" stroke="white" stroke-width="32" stroke-linecap="round"/>
+    
+    <!-- Наконечник ручки -->
+    <path d="M240 448L272 448" stroke="white" stroke-width="32" stroke-linecap="round"/>
+    
+    <!-- Спицы зонтика -->
+    <path d="M256 240L256 384" stroke="white" stroke-width="8" stroke-linecap="round"/>
+    <path d="M256 240L192 320" stroke="white" stroke-width="8" stroke-linecap="round"/>
+    <path d="M256 240L320 320" stroke="white" stroke-width="8" stroke-linecap="round"/>
+    <path d="M256 240L176 288" stroke="white" stroke-width="8" stroke-linecap="round"/>
+    <path d="M256 240L336 288" stroke="white" stroke-width="8" stroke-linecap="round"/>
+    
+    <!-- Капли дождя -->
+    <path d="M192 320L192 352" stroke="white" stroke-width="16" stroke-linecap="round"/>
+    <path d="M224 304L224 352" stroke="white" stroke-width="16" stroke-linecap="round"/>
+    <path d="M256 320L256 352" stroke="white" stroke-width="16" stroke-linecap="round"/>
+    <path d="M288 304L288 352" stroke="white" stroke-width="16" stroke-linecap="round"/>
+    <path d="M320 320L320 352" stroke="white" stroke-width="16" stroke-linecap="round"/>
+</svg> 
